@@ -1,316 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chamada Online</title>
+    <title>Gerenciamento de Presença</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Arial', sans-serif;
-        }
-
         body {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
             min-height: 100vh;
-            background: linear-gradient(135deg, #00B4DB, #0083B0);
-            color: #fff;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
             padding: 20px;
-            overflow-x: hidden;
         }
-
-        h1 {
-            font-size: 2.5em;
-            text-align: center;
-            margin-bottom: 20px;
-            font-weight: 700;
-            letter-spacing: 1px;
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
         }
-
-        input,
-        select,
-        button {
-            width: 100%;
-            max-width: 400px;
-            padding: 12px;
-            margin: 10px 0;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 1em;
-            outline: none;
+        h1, h2 {
+            color: #000000;
         }
-
-        input:focus,
-        select:focus,
-        button:focus {
-            border-color: #4A90E2;
-            box-shadow: 0 0 5px rgba(74, 144, 226, 0.8);
-        }
-
-        button {
-            background-color: #4A90E2;
-            color: #ffffff;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s;
-        }
-
-        button:hover {
-            background-color: #357ABD;
-            transform: scale(1.05);
-        }
-
-        ul {
-            list-style-type: none;
-            margin: 20px 0;
-            padding: 0;
-            width: 100%;
-            max-width: 450px;
-        }
-
-        ul li {
+        .list-group-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 20px;
-            background: #fff;
-            margin: 10px 0;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            color: #333;
-            font-size: 1.1em;
-        }
-
-        ul li:hover {
-            background-color: #f4f4f4;
-        }
-
-        .attendance-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .attendance-buttons button {
-            padding: 10px 15px;
-            font-size: 1em;
-            font-weight: bold;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s;
-        }
-
-        .presente {
-            background-color: #4CAF50;
-        }
-
-        .falta {
-            background-color: #FF5252;
-        }
-
-        .presente:hover {
-            background-color: #45a049;
-            transform: scale(1.05);
-        }
-
-        .falta:hover {
-            background-color: #ff3d3d;
-            transform: scale(1.05);
-        }
-
-        .historico {
-            display: none;
-            width: 100%;
-            max-width: 450px;
-            background: #f4f4f4;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-            overflow-y: auto;
-            max-height: 300px; /* Limita a altura do histórico */
-        }
-
-        .historico h2 {
-            text-align: center;
-            margin-bottom: 15px;
-            color: #333;
-        }
-
-        .historico ul {
-            padding-left: 20px;
-        }
-
-        .historico li {
-            padding: 8px 0;
-            font-size: 1.1em;
-            color: #000000;
-        }
-
-        .historico .presenca {
-            color: #4CAF50;
-        }
-
-        .historico .falta {
-            color: #000000;
-        }
-
-        /* Ajuste para telas menores */
-        @media (max-width: 600px) {
-            body {
-                padding: 15px;
-            }
-            h1 {
-                font-size: 2em;
-            }
-            input,
-            select,
-            button {
-                max-width: 100%;
-            }
-            ul li {
-                font-size: 1em;
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .attendance-buttons {
-                margin-top: 10px;
-                justify-content: flex-start;
-            }
-            .historico {
-                padding: 15px;
-                max-height: 250px; /* Limita a altura do histórico para telas menores */
-            }
-            .historico h2 {
-                font-size: 1.5em;
-            }
-            .historico ul li {
-                font-size: 1em;
-            }
         }
     </style>
 </head>
-
 <body>
-    <h1>Chamada Online</h1>
+    <div class="container">
+        <!-- Área de autenticação -->
+        <div id="auth">
+            <h1 class="text-center">Gerenciamento de Presença</h1>
+            <div class="d-flex justify-content-center my-3">
+                <button class="btn btn-primary me-2" onclick="toggleForm('login')">Login</button>
+                <button class="btn btn-secondary" onclick="toggleForm('signup')">Cadastro</button>
+            </div>
+            <div id="loginForm" class="mt-3">
+                <input type="text" id="loginNome" class="form-control mb-3" placeholder="Nome">
+                <input type="password" id="loginPassword" class="form-control mb-3" placeholder="Senha">
+                <button class="btn btn-success w-100" onclick="login()">Entrar</button>
+            </div>
+            <div id="signupForm" class="d-none mt-3">
+                <input type="text" id="signupNome" class="form-control mb-3" placeholder="Nome Completo">
+                <input type="password" id="signupPassword" class="form-control mb-3" placeholder="Senha">
+                <button class="btn btn-info w-100" onclick="signup()">Cadastrar</button>
+            </div>
+        </div>
 
-    <input type="text" id="nova-turma" placeholder="Nome da Turma">
-    <button onclick="adicionarTurma()">Adicionar Turma</button>
+        <!-- Área de gerenciamento -->
+        <div id="admin" class="d-none">
+            <h2 class="text-center">Gerenciar Alunos</h2>
+            <input type="text" id="nomeAluno" class="form-control my-2" placeholder="Nome do Aluno">
+            <select id="diaSemana" class="form-select my-2">
+                <option value="">Dia da Semana</option>
+                <option value="Segunda">Segunda</option>
+                <option value="Terça">Terça</option>
+                <option value="Quarta">Quarta</option>
+                <option value="Quinta">Quinta</option>
+                <option value="Sexta">Sexta</option>
+            </select>
+            <select id="periodo" class="form-select my-2">
+                <option value="">Período</option>
+                <option value="manhã">Manhã</option>
+                <option value="tarde">Tarde</option>
+            </select>
+            <button class="btn btn-primary w-100" onclick="adicionarAluno()">Adicionar Aluno</button>
+            <div id="calendario" class="mt-4"></div>
+            <button class="btn btn-danger w-100 mt-3" onclick="logout()">Sair</button>
+        </div>
+    </div>
 
-    <select id="turma" onchange="mostrarAlunos(this.value)"></select>
-
-    <input type="text" id="novo-aluno" placeholder="Nome do Aluno">
-    <button onclick="adicionarAluno()">Adicionar Aluno</button>
-
-    <ul id="lista-alunos"></ul>
-
-    <div id="historico" class="historico">
-        <h2>Histórico</h2>
-        <ul id="lista-historico"></ul>
+    <!-- Modal para Histórico -->
+    <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="historyModalLabel">Histórico de Presença</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul id="historyList" class="list-group"></ul>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" onclick="exportarCSV()">Exportar CSV</button>
+                    <button class="btn btn-danger" onclick="exportarPDF()">Exportar PDF</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        let turmas = JSON.parse(localStorage.getItem("turmas")) || {};
-        const turmaSelect = document.getElementById("turma");
-        const listaAlunos = document.getElementById("lista-alunos");
-        const listaHistorico = document.getElementById("lista-historico");
-        const historicoContainer = document.getElementById("historico");
+        const usuarios = JSON.parse(localStorage.getItem("usuarios") || "[]");
+        const turmas = JSON.parse(localStorage.getItem("turmas") || "{}");
 
-        carregarTurmas();
+        function toggleForm(form) {
+            document.getElementById('loginForm').classList.toggle('d-none', form !== 'login');
+            document.getElementById('signupForm').classList.toggle('d-none', form !== 'signup');
+        }
 
-        function adicionarTurma() {
-            const novaTurma = document.getElementById("nova-turma").value.trim();
-            if (novaTurma && !turmas[novaTurma]) {
-                turmas[novaTurma] = { alunos: [], historico: {} };
-                salvarTurmas();
-                carregarTurmas();
-                document.getElementById("nova-turma").value = "";
+        function login() {
+            const nome = document.getElementById('loginNome').value.trim();
+            const senha = document.getElementById('loginPassword').value.trim();
+
+            const usuario = usuarios.find(u => u.nome === nome && u.senha === senha);
+
+            if (usuario) {
+                document.getElementById('auth').classList.add('d-none');
+                document.getElementById('admin').classList.remove('d-none');
+                atualizarCalendario();
+            } else {
+                alert("Usuário ou senha inválidos!");
             }
         }
 
-        function carregarTurmas() {
-            turmaSelect.innerHTML = "";
-            for (const turma in turmas) {
-                const option = document.createElement("option");
-                option.value = turma;
-                option.textContent = turma;
-                turmaSelect.appendChild(option);
+        function signup() {
+            const nome = document.getElementById('signupNome').value.trim();
+            const senha = document.getElementById('signupPassword').value.trim();
+
+            if (!nome || !senha) {
+                alert("Preencha todos os campos.");
+                return;
             }
-            mostrarAlunos(turmaSelect.value);
+
+            if (usuarios.some(u => u.nome === nome)) {
+                alert("Usuário já cadastrado. Escolha outro nome.");
+                return;
+            }
+
+            usuarios.push({ nome, senha });
+            localStorage.setItem("usuarios", JSON.stringify(usuarios));
+            alert("Cadastro realizado com sucesso!");
+            toggleForm('login');
+        }
+
+        function logout() {
+            document.getElementById('admin').classList.add('d-none');
+            document.getElementById('auth').classList.remove('d-none');
         }
 
         function adicionarAluno() {
-            const turmaSelecionada = turmaSelect.value;
-            const novoAluno = document.getElementById("novo-aluno").value.trim();
-            if (novoAluno && !turmas[turmaSelecionada].alunos.includes(novoAluno)) {
-                turmas[turmaSelecionada].alunos.push(novoAluno);
-                salvarTurmas();
-                mostrarAlunos(turmaSelecionada);
-                document.getElementById("novo-aluno").value = "";
+            const nomeAluno = document.getElementById('nomeAluno').value.trim();
+            const diaSemana = document.getElementById('diaSemana').value;
+            const periodo = document.getElementById('periodo').value;
+
+            if (!nomeAluno || !diaSemana || !periodo) {
+                alert("Preencha todos os campos.");
+                return;
+            }
+
+            if (!turmas[diaSemana]) turmas[diaSemana] = { manhã: [], tarde: [] };
+
+            if (!turmas[diaSemana][periodo].some(a => a.nome === nomeAluno)) {
+                turmas[diaSemana][periodo].push({ nome: nomeAluno, historico: [] });
+                localStorage.setItem("turmas", JSON.stringify(turmas));
+                atualizarCalendario();
+            } else {
+                alert("Aluno já registrado nesse dia e período.");
             }
         }
 
-        function salvarTurmas() {
+        function atualizarCalendario() {
+            const calendarioDiv = document.getElementById('calendario');
+            calendarioDiv.innerHTML = '';
+
+            for (const dia in turmas) {
+                const diaDiv = document.createElement('div');
+                diaDiv.innerHTML = `<h4>${dia}</h4>`;
+
+                ['manhã', 'tarde'].forEach(periodo => {
+                    if (turmas[dia][periodo].length > 0) {
+                        const periodoDiv = document.createElement('div');
+                        periodoDiv.innerHTML = `<h5>${periodo}</h5>`;
+                        const ul = document.createElement('ul');
+                        ul.className = 'list-group';
+
+                        turmas[dia][periodo].forEach((aluno, index) => {
+                            const li = document.createElement('li');
+                            li.className = 'list-group-item';
+                            li.innerHTML = `
+                                ${aluno.nome}
+                                <div>
+                                    <button class="btn btn-success btn-sm" onclick="marcarPresenca('${dia}', '${periodo}', '${aluno.nome}', true)">Presença</button>
+                                    <button class="btn btn-danger btn-sm" onclick="marcarPresenca('${dia}', '${periodo}', '${aluno.nome}', false)">Falta</button>
+                                    <button class="btn btn-info btn-sm" onclick="visualizarHistorico('${dia}', '${periodo}', '${aluno.nome}')">Histórico</button>
+                                    <button class="btn btn-warning btn-sm" onclick="excluirAluno('${dia}', '${periodo}', ${index})">Excluir</button>
+                                </div>
+                            `;
+                            ul.appendChild(li);
+                        });
+
+                        periodoDiv.appendChild(ul);
+                        diaDiv.appendChild(periodoDiv);
+                    }
+                });
+
+                calendarioDiv.appendChild(diaDiv);
+            }
+        }
+
+        function excluirAluno(dia, periodo, index) {
+            turmas[dia][periodo].splice(index, 1);
             localStorage.setItem("turmas", JSON.stringify(turmas));
+            atualizarCalendario();
         }
 
-        function mostrarAlunos(turma) {
-            listaAlunos.innerHTML = "";
-            const alunos = turmas[turma].alunos || [];
-            alunos.forEach(aluno => {
-                const li = document.createElement("li");
-                li.textContent = aluno;
+        function marcarPresenca(dia, periodo, nomeAluno, presente) {
+            const aluno = turmas[dia][periodo].find(a => a.nome === nomeAluno);
+            aluno.historico.push({ data: new Date().toLocaleDateString(), presente });
+            localStorage.setItem("turmas", JSON.stringify(turmas));
+            atualizarCalendario();
+        }
 
-                const btnPresente = document.createElement("button");
-                btnPresente.className = "presente";
-                btnPresente.textContent = "C";
-                btnPresente.onclick = () => marcarPresenca(aluno, "C");
+        function visualizarHistorico(dia, periodo, nomeAluno) {
+            const aluno = turmas[dia][periodo].find(a => a.nome === nomeAluno);
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
 
-                const btnFalta = document.createElement("button");
-                btnFalta.className = "falta";
-                btnFalta.textContent = "F";
-                btnFalta.onclick = () => marcarPresenca(aluno, "F");
-
-                const btnHistorico = document.createElement("button");
-                btnHistorico.textContent = "Histórico";
-                btnHistorico.onclick = () => mostrarHistorico(aluno);
-
-                const btnContainer = document.createElement("div");
-                btnContainer.className = "attendance-buttons";
-                btnContainer.appendChild(btnPresente);
-                btnContainer.appendChild(btnFalta);
-                btnContainer.appendChild(btnHistorico);
-                li.appendChild(btnContainer);
-
-                listaAlunos.appendChild(li);
+            aluno.historico.forEach(entry => {
+                const item = document.createElement('li');
+                item.className = 'list-group-item';
+                item.textContent = `${entry.data} - ${entry.presente ? "Presente" : "Faltou"}`;
+                historyList.appendChild(item);
             });
+
+            const modal = new bootstrap.Modal(document.getElementById('historyModal'));
+            modal.show();
         }
 
-        function marcarPresenca(aluno, status) {
-            const dataHora = new Date().toLocaleString();
-            const turma = turmaSelect.value;
-            const historico = turmas[turma].historico || {};
-            historico[aluno] = historico[aluno] || [];
-            historico[aluno].push({ status, dataHora });
-            turmas[turma].historico = historico;
-            salvarTurmas();
+        function exportarCSV() {
+            const historyList = document.getElementById('historyList');
+            let csvContent = "Data,Presença\n";
+
+            for (const item of historyList.children) {
+                csvContent += item.textContent.replace(' - ', ',') + "\n";
+            }
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "historico_presenca.csv");
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
-        function mostrarHistorico(aluno) {
-            listaHistorico.innerHTML = "";
-            const turma = turmaSelect.value;
-            const historico = turmas[turma].historico || {};
-            const registros = historico[aluno] || [];
-            registros.forEach(registro => {
-                const li = document.createElement("li");
-                li.className = registro.status === "C" ? "presenca" : "falta";
-                li.textContent = `${registro.dataHora} - ${registro.status === "C" ? "Presente" : "Falta"}`;
-                listaHistorico.appendChild(li);
-            });
-            historicoContainer.style.display = "block";
+        async function exportarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const title = "Histórico de Presença";
+            const historyList = document.getElementById('historyList');
+
+            doc.setFontSize(18);
+            doc.text(title, 10, 10);
+
+            let yPosition = 20; // Margem inicial
+            doc.setFontSize(12);
+
+            for (const item of historyList.children) {
+                doc.text(item.textContent, 10, yPosition);
+                yPosition += 10; // Espaço entre linhas
+            }
+
+            doc.save("historico_presenca.pdf");
         }
     </script>
 </body>
