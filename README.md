@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciamento de Presença</title>
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <style>
         body {
             background: linear-gradient(135deg, #6a11cb, #2575fc);
@@ -17,134 +15,218 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            font-family: 'Arial', sans-serif;
+            background-size: cover;
         }
+
         .container {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 15px;
             padding: 30px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-            max-width: 800px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            color: black;
         }
-        h1, h2 {
-            color: #000000;
+
+        .btn-primary, .btn-info, .btn-success, .btn-danger, .btn-warning {
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
         }
-        .list-group-item {
+
+        .btn-primary:hover, .btn-info:hover, .btn-success:hover, .btn-danger:hover, .btn-warning:hover {
+            opacity: 0.85;
+            transform: scale(1.05);
+        }
+
+        .calendar-header {
+            font-weight: bold;
+            background: #6a11cb;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .calendar-cell {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            min-height: 150px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .calendar-cell:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .aluno-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
         }
+
+        .aluno-item:hover {
+            background: #f1f1f1;
+            transform: scale(1.02);
+        }
+
+        .periodo-separador {
+            border-top: 2px solid #ddd;
+            margin: 20px 0;
+            padding: 10px;
+            text-align: center;
+            color: #666;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #6a11cb;
+            box-shadow: 0 0 5px rgba(106, 17, 203, 0.5);
+        }
+
+        .btn-sm {
+            margin-left: 5px;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            padding: 0;
+        }
+
+        .historico-modal .modal-body p {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Área de autenticação -->
-        <div id="auth">
-            <h1 class="text-center">Gerenciamento de Presença</h1>
-            <div class="d-flex justify-content-center my-3">
-                <button class="btn btn-primary me-2" onclick="toggleForm('login')">Login</button>
-                <button class="btn btn-secondary" onclick="toggleForm('signup')">Cadastro</button>
-            </div>
-            <div id="loginForm" class="mt-3">
-                <input type="text" id="loginNome" class="form-control mb-3" placeholder="Nome">
-                <input type="password" id="loginPassword" class="form-control mb-3" placeholder="Senha">
-                <button class="btn btn-success w-100" onclick="login()">Entrar</button>
-            </div>
-            <div id="signupForm" class="d-none mt-3">
-                <input type="text" id="signupNome" class="form-control mb-3" placeholder="Nome Completo">
-                <input type="password" id="signupPassword" class="form-control mb-3" placeholder="Senha">
-                <button class="btn btn-info w-100" onclick="signup()">Cadastrar</button>
-            </div>
+
+    <!-- Tela de Login/Cadastro -->
+    <div class="container" id="auth">
+        <h2 class="text-center">Acesso</h2>
+        <div class="auth-button-container mb-3">
+            <button class="btn btn-primary" onclick="toggleForm('login')">Login</button>
+            <button class="btn btn-secondary" onclick="toggleForm('signup')">Cadastro</button>
         </div>
 
-        <!-- Área de gerenciamento -->
-        <div id="admin" class="d-none">
-            <h2 class="text-center">Gerenciar Alunos</h2>
-            <input type="text" id="nomeAluno" class="form-control my-2" placeholder="Nome do Aluno">
-            <select id="diaSemana" class="form-select my-2">
-                <option value="">Dia da Semana</option>
-                <option value="Segunda">Segunda</option>
-                <option value="Terça">Terça</option>
-                <option value="Quarta">Quarta</option>
-                <option value="Quinta">Quinta</option>
-                <option value="Sexta">Sexta</option>
-            </select>
-            <select id="periodo" class="form-select my-2">
-                <option value="">Período</option>
-                <option value="manhã">Manhã</option>
-                <option value="tarde">Tarde</option>
-            </select>
-            <button class="btn btn-primary w-100" onclick="adicionarAluno()">Adicionar Aluno</button>
-            <div id="calendario" class="mt-4"></div>
-            <button class="btn btn-danger w-100 mt-3" onclick="logout()">Sair</button>
+        <div id="loginForm">
+            <input type="text" id="loginNome" class="form-control mb-2" placeholder="Nome">
+            <input type="password" id="loginSenha" class="form-control mb-3" placeholder="Senha">
+            <button class="btn btn-success w-100" onclick="login()">Entrar</button>
+        </div>
+
+        <div id="signupForm" class="d-none">
+            <input type="text" id="signupNome" class="form-control mb-2" placeholder="Nome Completo">
+            <input type="password" id="signupSenha" class="form-control mb-3" placeholder="Senha">
+            <button class="btn btn-info w-100" onclick="signup()">Cadastrar</button>
         </div>
     </div>
 
-    <!-- Modal para Histórico -->
-    <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
+    <!-- Tela do Administrador -->
+    <div class="container d-none" id="admin">
+        <h2 class="text-center">Gerenciar Alunos</h2>
+        <input type="text" id="nomeAluno" class="form-control my-2" placeholder="Nome do Aluno">
+        <select id="diaSemana" class="form-select my-2">
+            <option value="">Dia da Semana</option>
+            <option value="segunda">Segunda</option>
+            <option value="terca">Terça</option>
+            <option value="quarta">Quarta</option>
+            <option value="quinta">Quinta</option>
+            <option value="sexta">Sexta</option>
+        </select>
+        
+        <!-- Separação para Períodos -->
+        <div class="periodo-separador">
+            <span>Selecione o Período</span>
+        </div>
+        
+        <select id="periodo" class="form-select my-2">
+            <option value="">Período</option>
+            <option value="manha">Manhã</option>
+            <option value="tarde">Tarde</option>
+        </select>
+
+        <button class="btn btn-primary w-100" onclick="adicionarAluno()">Adicionar Aluno</button>
+
+        <h3 class="text-center mt-4">Calendário</h3>
+        <div class="calendar">
+            <div class="calendar-header">Segunda</div>
+            <div class="calendar-header">Terça</div>
+            <div class="calendar-header">Quarta</div>
+            <div class="calendar-header">Quinta</div>
+            <div class="calendar-header">Sexta</div>
+
+            <div id="cell-segunda" class="calendar-cell"></div>
+            <div id="cell-terca" class="calendar-cell"></div>
+            <div id="cell-quarta" class="calendar-cell"></div>
+            <div id="cell-quinta" class="calendar-cell"></div>
+            <div id="cell-sexta" class="calendar-cell"></div>
+        </div>
+
+        <button class="btn btn-danger w-100 mt-3" onclick="logout()">Sair</button>
+    </div>
+
+    <!-- Modal de Histórico -->
+    <div class="modal fade" id="historicoModal" tabindex="-1" aria-labelledby="historicoModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="historyModalLabel">Histórico de Presença</h5>
+                    <h5 class="modal-title" id="historicoModalLabel">Histórico de Presença e Falta</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <ul id="historyList" class="list-group"></ul>
+                    <p id="historicoNome">Nome do Aluno: </p>
+                    <p id="historicoPresencas">Presenças: 0</p>
+                    <p id="historicoFaltas">Faltas: 0</p>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-success" onclick="exportarCSV()">Exportar CSV</button>
-                    <button class="btn btn-danger" onclick="exportarPDF()">Exportar PDF</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        const usuarios = JSON.parse(localStorage.getItem("usuarios") || "[]");
-        const turmas = JSON.parse(localStorage.getItem("turmas") || "{}");
+        let presencas = 0;
+        let faltas = 0;
+        let alunoNome = '';
 
-        function toggleForm(form) {
-            document.getElementById('loginForm').classList.toggle('d-none', form !== 'login');
-            document.getElementById('signupForm').classList.toggle('d-none', form !== 'signup');
+        function toggleForm(formType) {
+            document.getElementById('loginForm').classList.toggle('d-none', formType !== 'login');
+            document.getElementById('signupForm').classList.toggle('d-none', formType !== 'signup');
         }
 
         function login() {
-            const nome = document.getElementById('loginNome').value.trim();
-            const senha = document.getElementById('loginPassword').value.trim();
-
-            const usuario = usuarios.find(u => u.nome === nome && u.senha === senha);
-
-            if (usuario) {
-                document.getElementById('auth').classList.add('d-none');
-                document.getElementById('admin').classList.remove('d-none');
-                atualizarCalendario();
-            } else {
-                alert("Usuário ou senha inválidos!");
-            }
+            alert("Login realizado com sucesso!");
+            document.getElementById('auth').classList.add('d-none');
+            document.getElementById('admin').classList.remove('d-none');
         }
 
         function signup() {
-            const nome = document.getElementById('signupNome').value.trim();
-            const senha = document.getElementById('signupPassword').value.trim();
-
-            if (!nome || !senha) {
-                alert("Preencha todos os campos.");
-                return;
-            }
-
-            if (usuarios.some(u => u.nome === nome)) {
-                alert("Usuário já cadastrado. Escolha outro nome.");
-                return;
-            }
-
-            usuarios.push({ nome, senha });
-            localStorage.setItem("usuarios", JSON.stringify(usuarios));
             alert("Cadastro realizado com sucesso!");
-            toggleForm('login');
-        }
-
-        function logout() {
-            document.getElementById('admin').classList.add('d-none');
-            document.getElementById('auth').classList.remove('d-none');
+            document.getElementById('auth').classList.add('d-none');
+            document.getElementById('admin').classList.remove('d-none');
         }
 
         function adicionarAluno() {
@@ -157,125 +239,59 @@
                 return;
             }
 
-            if (!turmas[diaSemana]) turmas[diaSemana] = { manhã: [], tarde: [] };
+            alunoNome = nomeAluno;  // Armazena o nome do aluno
 
-            if (!turmas[diaSemana][periodo].some(a => a.nome === nomeAluno)) {
-                turmas[diaSemana][periodo].push({ nome: nomeAluno, historico: [] });
-                localStorage.setItem("turmas", JSON.stringify(turmas));
-                atualizarCalendario();
-            } else {
-                alert("Aluno já registrado nesse dia e período.");
-            }
+            const cell = document.getElementById(`cell-${diaSemana}`);
+            const alunoItem = document.createElement('div');
+            alunoItem.classList.add('aluno-item');
+
+            const nomeSpan = document.createElement('span');
+            nomeSpan.textContent = nomeAluno;
+
+            const btnPresente = document.createElement('button');
+            btnPresente.textContent = "✔️";
+            btnPresente.classList.add("btn", "btn-success", "btn-sm");
+            btnPresente.onclick = () => {
+                presencas++;
+                atualizarHistorico();
+            };
+
+            const btnFalta = document.createElement('button');
+            btnFalta.textContent = "❌";
+            btnFalta.classList.add("btn", "btn-danger", "btn-sm");
+            btnFalta.onclick = () => {
+                faltas++;
+                atualizarHistorico();
+            };
+
+            const btnHistorico = document.createElement('button');
+            btnHistorico.textContent = "📊 ";
+            btnHistorico.classList.add("btn", "btn-info", "btn-sm");
+            btnHistorico.onclick = () => {
+                document.getElementById('historicoNome').textContent = `Nome do Aluno: ${alunoNome}`;
+                document.getElementById('historicoPresencas').textContent = `Presenças: ${presencas}`;
+                document.getElementById('historicoFaltas').textContent = `Faltas: ${faltas}`;
+                new bootstrap.Modal(document.getElementById('historicoModal')).show();
+            };
+
+            const btnExcluir = document.createElement('button');
+            btnExcluir.textContent = "🗑️";
+            btnExcluir.classList.add("btn", "btn-warning", "btn-sm");
+            btnExcluir.onclick = () => alunoItem.remove();
+
+            alunoItem.append(nomeSpan, btnPresente, btnFalta, btnHistorico, btnExcluir);
+            cell.appendChild(alunoItem);
         }
 
-        function atualizarCalendario() {
-            const calendarioDiv = document.getElementById('calendario');
-            calendarioDiv.innerHTML = '';
-
-            for (const dia in turmas) {
-                const diaDiv = document.createElement('div');
-                diaDiv.innerHTML = `<h4>${dia}</h4>`;
-
-                ['manhã', 'tarde'].forEach(periodo => {
-                    if (turmas[dia][periodo].length > 0) {
-                        const periodoDiv = document.createElement('div');
-                        periodoDiv.innerHTML = `<h5>${periodo}</h5>`;
-                        const ul = document.createElement('ul');
-                        ul.className = 'list-group';
-
-                        turmas[dia][periodo].forEach((aluno, index) => {
-                            const li = document.createElement('li');
-                            li.className = 'list-group-item';
-                            li.innerHTML = `
-                                ${aluno.nome}
-                                <div>
-                                    <button class="btn btn-success btn-sm" onclick="marcarPresenca('${dia}', '${periodo}', '${aluno.nome}', true)">Presença</button>
-                                    <button class="btn btn-danger btn-sm" onclick="marcarPresenca('${dia}', '${periodo}', '${aluno.nome}', false)">Falta</button>
-                                    <button class="btn btn-info btn-sm" onclick="visualizarHistorico('${dia}', '${periodo}', '${aluno.nome}')">Histórico</button>
-                                    <button class="btn btn-warning btn-sm" onclick="excluirAluno('${dia}', '${periodo}', ${index})">Excluir</button>
-                                </div>
-                            `;
-                            ul.appendChild(li);
-                        });
-
-                        periodoDiv.appendChild(ul);
-                        diaDiv.appendChild(periodoDiv);
-                    }
-                });
-
-                calendarioDiv.appendChild(diaDiv);
-            }
+        function logout() {
+            document.getElementById('admin').classList.add('d-none');
+            document.getElementById('auth').classList.remove('d-none');
         }
 
-        function excluirAluno(dia, periodo, index) {
-            turmas[dia][periodo].splice(index, 1);
-            localStorage.setItem("turmas", JSON.stringify(turmas));
-            atualizarCalendario();
-        }
-
-        function marcarPresenca(dia, periodo, nomeAluno, presente) {
-            const aluno = turmas[dia][periodo].find(a => a.nome === nomeAluno);
-            aluno.historico.push({ data: new Date().toLocaleDateString(), presente });
-            localStorage.setItem("turmas", JSON.stringify(turmas));
-            atualizarCalendario();
-        }
-
-        function visualizarHistorico(dia, periodo, nomeAluno) {
-            const aluno = turmas[dia][periodo].find(a => a.nome === nomeAluno);
-            const historyList = document.getElementById('historyList');
-            historyList.innerHTML = '';
-
-            aluno.historico.forEach(entry => {
-                const item = document.createElement('li');
-                item.className = 'list-group-item';
-                item.textContent = `${entry.data} - ${entry.presente ? "Presente" : "Faltou"}`;
-                historyList.appendChild(item);
-            });
-
-            const modal = new bootstrap.Modal(document.getElementById('historyModal'));
-            modal.show();
-        }
-
-        function exportarCSV() {
-            const historyList = document.getElementById('historyList');
-            let csvContent = "Data,Presença\n";
-
-            for (const item of historyList.children) {
-                csvContent += item.textContent.replace(' - ', ',') + "\n";
-            }
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-
-            const link = document.createElement("a");
-            link.setAttribute("href", url);
-            link.setAttribute("download", "historico_presenca.csv");
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        async function exportarPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            const title = "Histórico de Presença";
-            const historyList = document.getElementById('historyList');
-
-            doc.setFontSize(18);
-            doc.text(title, 10, 10);
-
-            let yPosition = 20; // Margem inicial
-            doc.setFontSize(12);
-
-            for (const item of historyList.children) {
-                doc.text(item.textContent, 10, yPosition);
-                yPosition += 10; // Espaço entre linhas
-            }
-
-            doc.save("historico_presenca.pdf");
+        function atualizarHistorico() {
+            // Atualiza o histórico de presenças e faltas
         }
     </script>
+
 </body>
 </html>
