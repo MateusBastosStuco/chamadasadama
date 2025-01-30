@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
@@ -11,7 +12,7 @@
         /* Fundo com gradiente suave */
         body {
             background: linear-gradient(135deg, #6a11cb, #2575fc);
-            color: rgb(3, 3, 3);
+            color: white;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -19,6 +20,7 @@
             padding: 20px;
             font-family: 'Arial', sans-serif;
             background-size: cover;
+            margin: 0;
         }
 
         /* Estilização do container da tela de login */
@@ -110,6 +112,8 @@
             padding: 30px;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
             color: black;
+            max-width: 1200px;
+            width: 100%;
         }
 
         /* Estilos para o calendário */
@@ -371,8 +375,8 @@
         }
 
         function logout() {
-            document.getElementById('admin').classList.add('hidden');
             document.getElementById('auth-container').classList.remove('hidden');
+            document.getElementById('admin').classList.add('hidden');
         }
     </script>
 </body>
