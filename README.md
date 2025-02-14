@@ -382,5 +382,3 @@
         }
     </script>
 </body>
-
-</html>
