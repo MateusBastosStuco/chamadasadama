@@ -143,7 +143,7 @@
     <!-- Menu com o texto "MENU" -->
     <div class="menu-container">
         <div class="menu">MENU</div>
-        <a href="https://mateusbastosstuco.github.io/chamadasadama/" class="calendar-link" target="_blank">📅 Calendário</a>
+        <a href="https://mateusbastosstuco.github.io/Chamada-teste/"class="calendar-link" target="_blank">📅 Calendário</a>
     </div>
 
     <div class="form-container">
