@@ -143,7 +143,7 @@
     <!-- Menu com o texto "MENU" -->
     <div class="menu-container">
         <div class="menu">MENU</div>
-        <a href="https://mateusbastosstuco.github.io/Chamada-teste/"class=" "calendar-link" target="_blank">📅 Calendário</a>
+        <a href="https://mateusbastosstuco.github.io/Chamada-teste/" class="calendar-link" target="_blank">📅 Calendário</a>
     </div>
 
     <div class="form-container">
@@ -194,118 +194,70 @@
     <script>
         let alunos = [];
 
-        // Carregar alunos do localStorage
-        function carregarAlunosDoLocalStorage() {
-            const alunosSalvos = localStorage.getItem('alunos');
-            if (alunosSalvos) {
-                alunos = JSON.parse(alunosSalvos);
-                atualizarListaDeAlunos();
-            } else {
-                alunos = []; // Caso o localStorage esteja vazio, inicie com um array vazio
-            }
-        }
-
-        // Salvar alunos no localStorage
-        function salvarAlunosNoLocalStorage() {
-            localStorage.setItem('alunos', JSON.stringify(alunos));
-        }
-
-        // Mostrar ou esconder o formulário de informações adicionais
         function mostrarPasta() {
             const pasta = document.getElementById("pasta");
-            pasta.style.display = (pasta.style.display === "block") ? "none" : "block";
+            pasta.style.display = pasta.style.display === "block" ? "none" : "block";
         }
 
-        // Adicionar um aluno
         function adicionarAluno() {
-            const nomeAluno = document.getElementById("nome-aluno").value;
-            const idade = document.getElementById("info-idade").value;
-            const turma = document.getElementById("info-turma").value;
-            const endereco = document.getElementById("info-endereco").value;
-            const saude = document.getElementById("info-saude").value;
-            const responsavel = document.getElementById("info-responsavel").value;
-
-            // Validação
-            if (!nomeAluno || !idade || !turma || !endereco || !saude || !responsavel) {
-                alert("Preencha todas as informações antes de adicionar o aluno.");
+            const nomeAluno = document.getElementById("nome-aluno").value.trim();
+            if (!nomeAluno) {
+                alert("Por favor, insira um nome válido.");
                 return;
             }
 
-            if (!Number.isInteger(parseInt(idade)) || parseInt(idade) <= 0) {
-                alert("Por favor, insira uma idade válida.");
-                return;
-            }
+            // Verifica se há alunos no localStorage e obtém os dados existentes ou cria um array vazio
+            let alunos = JSON.parse(localStorage.getItem("alunosCadastro")) || [];
+            
+            // Adiciona o novo aluno
+            alunos.push({ nome: nomeAluno });
+            
+            // Salva novamente no localStorage
+            localStorage.setItem("alunosCadastro", JSON.stringify(alunos));
 
-            const aluno = {
-                nome: nomeAluno,
-                idade: idade,
-                turma: turma,
-                endereco: endereco,
-                saude: saude,
-                responsavel: responsavel,
-            };
-
-            alunos.push(aluno);
-            salvarAlunosNoLocalStorage();
+            // Atualiza a lista na página
             atualizarListaDeAlunos();
             limparCampos();
             mostrarFeedback();
         }
 
-        // Excluir aluno
         function excluirAluno() {
-            const nomeAluno = document.getElementById("nome-aluno").value;
+            const nomeAluno = document.getElementById("nome-aluno").value.trim();
             alunos = alunos.filter(aluno => aluno.nome !== nomeAluno);
-            salvarAlunosNoLocalStorage();
             atualizarListaDeAlunos();
             limparCampos();
         }
 
-        // Atualizar a lista de alunos na tela
         function atualizarListaDeAlunos() {
             const listAlunos = document.getElementById("list-alunos");
-            listAlunos.innerHTML = '';
+            listAlunos.innerHTML = "";
             alunos.forEach(aluno => {
                 const li = document.createElement("li");
                 li.textContent = `Nome: ${aluno.nome}, Idade: ${aluno.idade}, Turma: ${aluno.turma}`;
-                
-                // Ícone de lupa
+
                 const lupaIcon = document.createElement("span");
                 lupaIcon.classList.add("lupa-icon");
                 lupaIcon.textContent = "🔍";
                 lupaIcon.onclick = () => mostrarInformacoes(aluno);
-                
+
                 li.appendChild(lupaIcon);
                 listAlunos.appendChild(li);
             });
         }
 
-        // Exibir as informações detalhadas do aluno ao clicar na lupa
         function mostrarInformacoes(aluno) {
             alert(`Nome: ${aluno.nome}\nIdade: ${aluno.idade}\nTurma: ${aluno.turma}\nEndereço: ${aluno.endereco}\nEstado de Saúde: ${aluno.saude}\nResponsável: ${aluno.responsavel}`);
         }
 
-        // Limpar os campos de entrada
         function limparCampos() {
-            document.getElementById("nome-aluno").value = '';
-            document.getElementById("info-idade").value = '';
-            document.getElementById("info-turma").value = '';
-            document.getElementById("info-endereco").value = '';
-            document.getElementById("info-saude").value = '';
-            document.getElementById("info-responsavel").value = '';
+            document.querySelectorAll(".input-info input").forEach(input => input.value = "");
         }
 
-        // Mostrar o feedback de sucesso
         function mostrarFeedback() {
             const feedback = document.getElementById("feedback");
-            feedback.classList.remove('hidden');
-            setTimeout(() => {
-                feedback.classList.add('hidden');
-            }, 3000);
+            feedback.classList.remove("hidden");
+            setTimeout(() => feedback.classList.add("hidden"), 3000);
         }
-
-        // Carregar alunos ao abrir a página
-        carregarAlunosDoLocalStorage();
     </script>
 
 </body>
